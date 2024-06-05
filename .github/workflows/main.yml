@@ -35,6 +35,12 @@ jobs:
     - name: Run tests
       run: dotnet test SonarIntegration/SonarIntegration.csproj --configuration Release --no-build --logger:trx
 
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
     - name: SonarQube Scan
       run: |
         dotnet tool install --global dotnet-sonarscanner
