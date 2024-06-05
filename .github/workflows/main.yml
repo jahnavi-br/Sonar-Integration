@@ -27,21 +27,21 @@ jobs:
         dotnet-version: '7.x'  # Specify your required .NET version
 
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore SonarIntegration/SonarIntegration.csproj
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build SonarIntegration/SonarIntegration.csproj --configuration Release --no-restore
 
     - name: Run tests
-      run: dotnet test --configuration Release --no-build --logger:trx
+      run: dotnet test SonarIntegration/SonarIntegration.csproj --configuration Release --no-build --logger:trx
 
     - name: SonarQube Scan
       run: |
         dotnet tool install --global dotnet-sonarscanner
         export PATH="$PATH:/home/runner/.dotnet/tools"
-        dotnet sonarscanner begin
-        dotnet build --configuration Release
-        dotnet sonarscanner end
+        dotnet sonarscanner begin /k:"sonarintegration" /d:sonar.host.url="${{ env.SONAR_HOST_URL }}" /d:sonar.login="${{ env.SONAR_TOKEN }}"
+        dotnet build SonarIntegration/SonarIntegration.csproj --configuration Release
+        dotnet sonarscanner end /d:sonar.login="${{ env.SONAR_TOKEN }}"
 
     - name: Publish Test Results
       if: always()
